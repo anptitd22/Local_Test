@@ -19,6 +19,12 @@ ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD')
 
 file_path = './dataset/healthcare/doctors.csv'
 
+
+def dropMissingData(table: DataFrame, field: str) -> DataFrame:
+    mask = pc.not_(pc.is_null(table[field]))
+    filtered_table = table.filter(mask)
+    return filtered_table
+
 def create_bucket_if_not_exists(bucket_name="lakehouse"):
     s3 = boto3.client(
             "s3",
@@ -48,6 +54,7 @@ def upload_to_iceberg(df: DataFrame) -> None:
         pa.field("email", pa.string(), nullable=False),
         pa.field("created_at", pa.timestamp("us"), nullable=False),
     ])
+    df = dropMissingData(df, "doctor_id")
 
     df = df.cast(arrow_schema)
     catalog = load_catalog(
