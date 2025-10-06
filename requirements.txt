@@ -1,0 +1,5 @@
+pyiceberg
+pyiceberg[hive]
+pyarrow
+boto3
+dotenv

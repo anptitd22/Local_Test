@@ -1,0 +1,101 @@
+services:
+
+  trino:
+    image: trinodb/trino:463   # ổn định với JDK17
+    container_name: trino
+    user: root
+    env_file:
+      - .env
+    ports:
+      - "8088:8080"
+    volumes:
+      - ./config/trino/etc:/etc/trino:rw
+      - ./data/trino:/data/trino:rw
+    depends_on:
+      - minio
+      - metastore
+    restart: always
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z
+    hostname: minio
+    container_name: minio
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"  # S3 API
+      - "9001:9001"  # Web console
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  
+  mc:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy    
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb --ignore-existing myminio/warehouse;
+      /usr/bin/mc mb --ignore-existing myminio/iceberg;
+      /usr/bin/mc mb --ignore-existing myminio/lakehouse;
+      exit 0;
+      "
+  
+  postgres-metastore:
+    image: postgres:13
+    container_name: postgres-metastore
+    environment:
+      POSTGRES_DB: metastore_db
+      POSTGRES_USER: ${HIVE_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${HIVE_POSTGRES_PASSWORD}
+    volumes:
+      - postgres-metastore-volume:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"            
+    restart: always
+
+  metastore:
+    build: 
+      context: ./hive-metastore
+    hostname: metastore
+    container_name: metastore
+    environment:
+      SERVICE_NAME: metastore
+      DB_DRIVER: postgres
+      DB_URL: jdbc:postgresql://postgres-metastore:5432/metastore_db
+      DB_USER: ${HIVE_POSTGRES_USER}
+      DB_PASS: ${HIVE_POSTGRES_PASSWORD}
+      METASTORE_DB_TYPE: postgres
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+      SERVICE_OPTS: >-
+        -Xmx1G
+        -Djavax.jdo.option.ConnectionDriverName=org.postgresql.Driver
+        -Djavax.jdo.option.ConnectionURL=jdbc:postgresql://postgres-metastore:5432/metastore_db
+        -Djavax.jdo.option.ConnectionUserName=hive
+        -Djavax.jdo.option.ConnectionPassword=hive123
+        -Dmetastore.warehouse.dir=s3a://lakehouse/
+    depends_on:
+      - postgres-metastore
+      - minio
+    ports:
+      - "9083:9083"
+    restart: always
+networks:
+  default:  
+    external: true
+    name: lakehouse_network_test
+
+volumes:
+  postgres-metastore-volume:
+  minio-data:
