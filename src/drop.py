@@ -1,13 +1,16 @@
+import datetime
 import pyiceberg
 from pyiceberg.catalog import load_catalog
 from dotenv import load_dotenv
 import os
 
-path_env = './.env'
+path_env = '../.env'
 load_dotenv(path_env)
 
 ACCESS_KEY = os.getenv('MINIO_ROOT_USER')
 ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD')
+
+ingest_dt=datetime.date.today().isoformat()
 
 catalog = load_catalog(
     "hive",
