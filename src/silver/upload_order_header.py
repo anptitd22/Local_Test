@@ -4,9 +4,8 @@ import pyarrow.csv as csv
 import pyarrow.compute as pc
 from pyiceberg.catalog import load_catalog
 from pyiceberg.schema import Schema
-from pyiceberg.types import NestedField, StringType, TimestampType, LongType
-from pyiceberg.partitioning import PartitionSpec, PartitionField
-from pyiceberg.transforms import DayTransform
+from pyiceberg.types import NestedField, TimestampType, LongType, StringType, DecimalType
+from pyiceberg.partitioning import PartitionSpec, PartitionField, DayTransform
 # import boto3
 
 from dotenv import load_dotenv
@@ -22,7 +21,7 @@ ACCESS_KEY = os.getenv('MINIO_ROOT_USER')
 ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD')
 
 #variable
-file_path = '../../dataset/datamart/Customers.csv'
+file_path = '../../dataset/datamart/OrderHeader.csv'
 create_at = datetime.datetime.now().isoformat(timespec="seconds")
 
 #main functions
@@ -37,13 +36,15 @@ def read_csv(file_path: str) -> DataFrame:
 
 def upload_to_iceberg(df: DataFrame) -> None:
     arrow_schema = pa.schema([
-        pa.field("CustomerID", pa.int64(),  nullable=False),
-        pa.field("AccountNumber", pa.string(), nullable=False),
-        pa.field("FirstName", pa.string(), nullable=True),
-        pa.field("MiddleName", pa.string(), nullable=True),
-        pa.field("LastName", pa.string(), nullable=True),
+        pa.field("SalesOrderID", pa.int64(),  nullable=False),
+        pa.field("OrderDate", pa.timestamp("us"), nullable=True),
+        pa.field("ShipDate", pa.timestamp("us"), nullable=True),
+        pa.field("SalesOrderNumber", pa.string(), nullable=True),
+        pa.field("CustomerID", pa.int64(), nullable=False),
+        pa.field("SubTotal", pa.decimal128(18, 4), nullable=True),
         pa.field("CreatedAt", pa.timestamp("us"), nullable=False),
     ])
+    df = drop_missing_data(df, "SalesOrderID")
     df = drop_missing_data(df, "CustomerID")
 
     df = df.cast(arrow_schema)
@@ -63,23 +64,23 @@ def upload_to_iceberg(df: DataFrame) -> None:
         }
     )
     schema = Schema(
-        NestedField(1, "CustomerID", LongType(), required=True),
-        NestedField(2, "AccountNumber", StringType(), required=True),
-        NestedField(3, "FirstName", StringType(), required=False),
-        NestedField(4, "MiddleName", StringType(), required=False),
-        NestedField(5, "LastName", StringType(), required=False),
-        NestedField(6, "CreatedAt", TimestampType(), required=True),
+        NestedField(1, "SalesOrderID", LongType(), required=True),
+        NestedField(2, "OrderDate", TimestampType(), required=False),
+        NestedField(3, "ShipDate", TimestampType(), required=False),
+        NestedField(4, "SalesOrderNumber", StringType(), required=False),
+        NestedField(5, "CustomerID", LongType(), required=True),
+        NestedField(6, "SubTotal", DecimalType(18, 4), required=False),
+        NestedField(7, "CreatedAt", TimestampType(), required=True),
     )
     try:
         created_id = schema.find_field("CreatedAt").field_id
         partition_silver = PartitionSpec(
-            PartitionField(field_id=1000, source_id=created_id, transform=DayTransform(), name="created_at_day")
+            PartitionField(field_id=1001, source_id=created_id, transform=DayTransform(), name="created_at_day")
         )
-        tbl = catalog.create_table("silver.customer", schema=schema, partition_spec=partition_silver)
+        tbl = catalog.create_table("silver.order_header", schema=schema, partition_spec=partition_silver)
     except:
-        tbl = catalog.load_table("silver.customer")
-        # catalog.drop_table("silver.customer")
-
+        tbl = catalog.load_table("silver.order_header")
+        # catalog.drop_table("silver.order_header")
     tbl.append(df)
 
     result = tbl.scan().to_arrow()
@@ -88,6 +89,3 @@ def upload_to_iceberg(df: DataFrame) -> None:
 if __name__ == "__main__":
     df = read_csv(file_path)
     upload_to_iceberg(df)
-
-
-
