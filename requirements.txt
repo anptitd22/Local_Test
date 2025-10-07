@@ -1,5 +1,6 @@
 pyiceberg
 pyiceberg[hive]
+pyiceberg[pyiceberg-core]
 pyarrow
 boto3
 dotenv
