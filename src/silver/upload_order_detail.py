@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import pyarrow as pa
 import pyarrow.csv as csv
@@ -19,6 +20,11 @@ load_dotenv(path_env)
 
 ACCESS_KEY = os.getenv('MINIO_ROOT_USER')
 ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD')
+
+#arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('--operation', type=str, required=False, default='upload', help='Operation to perform: upload or delete')
+args = parser.parse_args()
 
 #variable
 file_path = '../../dataset/datamart/OrderDetail.csv'
@@ -81,15 +87,41 @@ def upload_to_iceberg(df: DataFrame) -> None:
         tbl = catalog.create_table("silver.order_detail", schema=schema, partition_spec=partition_silver)
     except:
         tbl = catalog.load_table("silver.order_detail")
-        # catalog.drop_table("silver.order_detail")
+    
     tbl.append(df)
 
     result = tbl.scan().to_arrow()
     print(result)
 
+def delete_iceberg_table() -> None:
+    catalog = load_catalog(
+        "hive",
+        **{
+            "uri": "thrift://localhost:9083",
+            "warehouse": "s3a://lakehouse",
+            "s3.endpoint": "http://localhost:9000",
+            "s3.access-key-id": ACCESS_KEY,
+            "s3.secret-access-key": ACCESS_SECRET,
+            "s3.path-style-access": "true",
+            "s3.region": "us-east-1",
+            "s3.ssl.enabled": "false",
+            "py-io-impl": "pyiceberg.io.pyarrow.PyArrowFileIO",
+            "fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
+        }
+    )
+    try:
+        catalog.drop_table("silver.order_detail")
+        print("Table 'silver.order_detail' has been deleted.")
+    except Exception as e:
+        print(f"Error deleting table: {e}")
+
 if __name__ == "__main__":
-    df = read_csv(file_path)
-    upload_to_iceberg(df)
+    operation = args.operation
+    if operation == 'upload':
+        df = read_csv(file_path)
+        upload_to_iceberg(df)
+    elif operation == 'delete':
+        delete_iceberg_table()
 
 
 
