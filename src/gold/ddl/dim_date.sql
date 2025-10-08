@@ -1,5 +1,6 @@
-create table if not exists <CATALOG>.<SCHEMA>.fact_sales (      
-    the_date DATE not null primary key
+create table if not exists iceberg.silver.dim_date (
+    date_key bigint      
+    ,the_date DATE 
     , year INTEGER
     , quarter INTEGER
     , month INTEGER
@@ -14,5 +15,5 @@ create table if not exists <CATALOG>.<SCHEMA>.fact_sales (
 )
 WITH (
     format = 'PARQUET',
-    partitioning = ARRAY['days(the_date)']
+    partitioning = ARRAY['month(the_date)']
 );

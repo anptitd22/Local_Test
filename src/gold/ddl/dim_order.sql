@@ -1,12 +1,12 @@
-create table if not exists <CATALOG>.<SCHEMA>.dim_order (
-    sales_order_key bigint not null primary key 
-    , sales_order_id bigint not null
+create table if not exists iceberg.silver.dim_order (
+    sales_order_key bigint 
+    , sales_order_id bigint 
     , sales_order_detail_id bigint
     , product_id bigint
     , customer_id bigint
     , order_date timestamp
     , ship_date timestamp
-    , sales_order_number string
+    , sales_order_number VARCHAR
     , order_month int 
     , order_year int
     , created_at timestamp
@@ -14,5 +14,5 @@ create table if not exists <CATALOG>.<SCHEMA>.dim_order (
 )
 WITH (
     format = 'PARQUET',
-    partitioning = ARRAY['days(updated_at)']
+    partitioning = ARRAY['day(updated_at)']
 );

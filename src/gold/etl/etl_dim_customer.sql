@@ -1,4 +1,4 @@
-INSERT INTO <CATALOG>.<SCHEMA>.dim_customer
+INSERT INTO iceberg.silver.dim_customer
 (
     customer_key
     , customer_id
@@ -20,4 +20,4 @@ SELECT
     , concat_ws(' ', firstname, middlename, lastname) AS full_name
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM <CATALOG>.<SCHEMA>.customer;
+FROM iceberg.silver.customer;

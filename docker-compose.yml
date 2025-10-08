@@ -11,6 +11,7 @@ services:
     volumes:
       - ./config/trino/etc:/etc/trino:rw
       - ./data/trino:/data/trino:rw
+      - ./src/gold:/tmp/gold:rw
     depends_on:
       - minio
       - metastore

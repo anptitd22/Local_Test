@@ -1,4 +1,4 @@
-INSERT INTO <CATALOG>.<SCHEMA>.dim_date
+INSERT INTO iceberg.silver.dim_date
 SELECT
     CAST(format_datetime(d, 'yyyyMMd') AS BIGINT) * 1 
         + (CASE WHEN length(format_datetime(d, 'yyyyMMdd')) = 7 THEN 0 ELSE 0 END) AS date_key,
@@ -14,4 +14,4 @@ SELECT
     FALSE AS is_holiday,
     week_of_year(d) AS week_of_year,
     CASE WHEN month(d) >= 7 THEN year(d) + 1 ELSE year(d) END AS fiscal_year
-FROM UNNEST(sequence(DATE '2000-01-01', DATE '2030-12-31', INTERVAL '1' DAY)) AS t(d);
+FROM UNNEST(sequence(DATE '2010-01-01', DATE '2025-12-31', INTERVAL '1' DAY)) AS t(d);

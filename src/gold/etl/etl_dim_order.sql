@@ -1,4 +1,4 @@
-INSERT INTO <CATALOG>.<SCHEMA>.dim_order
+INSERT INTO iceberg.silver.dim_order
 (
     sales_order_key
     , sales_order_id
@@ -26,6 +26,6 @@ SELECT
     , year(oh.orderdate) as order_year
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM <CATALOG>.<SCHEMA>.order_detail od
-JOIN <CATALOG>.<SCHEMA>.order_header oh
+FROM iceberg.silver.order_detail od
+JOIN iceberg.silver.order_header oh
 ON od.salesorderid = oh.salesorderid;

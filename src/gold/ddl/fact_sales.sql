@@ -1,20 +1,18 @@
-create table if not exists <CATALOG>.<SCHEMA>.fact_sales (
-    sales_key bigint not null primary key generated always as identity (start with 1 increment by 1)
-    , product_key bigint not null
-    , customer_key bigint not null
-    , sales_order_key bigint not null
+create table if not exists iceberg.silver.fact_sales (
+    sales_key bigint
+    , product_key bigint 
+    , customer_key bigint 
+    , sales_order_key bigint 
+    , date_key bigint
     , product_list_price decimal(18,4)
     , order_unit_price decimal(18,4)
     , order_unit_price_discount decimal(18,4)
     , order_sub_total_group decimal(18,4)
     , order_qty bigint
-    , foreign key (product_key) references <CATALOG>.<SCHEMA>.dim_product(product_key)
-    , foreign key (customer_key) references <CATALOG>.<SCHEMA>.dim_customer(customer_key)
-    , foreign key (sales_order_key) references <CATALOG>.<SCHEMA>.dim_order(sales_order_key)
     , created_at timestamp
     , updated_at timestamp
 )
 WITH (
     format = 'PARQUET',
-    partitioning = ARRAY['days(updated_at)']
+    partitioning = ARRAY['day(updated_at)']
 );

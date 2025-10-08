@@ -1,17 +1,17 @@
-create table if not exists <CATALOG>.<SCHEMA>.dim_product (
-    product_key bigint not null primary key 
-    , product_id bigint not null
+create table if not exists iceberg.silver.dim_product (
+    product_key bigint 
+    , product_id bigint 
     , product_category_id bigint
     , product_sub_category_id bigint
-    , product_name string
-    , product_color string
-    , product_size string
-    , sub_category_name string
-    , category_name string
+    , product_name VARCHAR
+    , product_color VARCHAR
+    , product_size VARCHAR
+    , sub_category_name VARCHAR
+    , category_name VARCHAR
     , created_at timestamp
     , updated_at timestamp
 )
 WITH (
     format = 'PARQUET',
-    partitioning = ARRAY['days(updated_at)']
+    partitioning = ARRAY['day(updated_at)']
 );
