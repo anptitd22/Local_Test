@@ -3,9 +3,9 @@ create table if not exists <CATALOG>.<SCHEMA>.fact_sales (
     , product_key bigint not null
     , customer_key bigint not null
     , sales_order_key bigint not null
-    , sub_total decimal(18,4)
     , unit_price decimal(18,4)
     , unit_price_discount decimal(18,4)
+    , sub_total_group_order decimal(18,4)
     , order_qty bigint
     , foreign key (product_key) references <CATALOG>.<SCHEMA>.dim_product(product_key)
     , foreign key (customer_key) references <CATALOG>.<SCHEMA>.dim_customer(customer_key)
