@@ -1,5 +1,5 @@
 create table if not exists <CATALOG>.<SCHEMA>.dim_order (
-    sales_order_key bigint not null primary key generated always as identity (start with 1 increment by 1)
+    sales_order_key bigint not null primary key 
     , sales_order_id bigint not null
     , sales_order_detail_id bigint
     , product_id bigint

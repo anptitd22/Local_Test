@@ -1,8 +1,7 @@
 create table if not exists <CATALOG>.<SCHEMA>.dim_customer (
-    customer_key bigint key generated always as identity (start with 1 increment by 1)
+    customer_key bigint primary key
     , customer_id bigint not null
     , account_number string
-    , customer_name string
     , middle_name string
     , first_name string
     , last_name string
