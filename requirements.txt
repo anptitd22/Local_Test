@@ -1,6 +1,7 @@
-pyiceberg
-pyiceberg[hive]
-pyiceberg[pyiceberg-core]
+pyiceberg~=0.10.0
+pyiceberg[hive]~=0.10.0
+pyiceberg[pyiceberg-core]~=0.6.0
+pydantic>=2,<3,!=2.4.0,!=2.4.1
 pyarrow
 boto3
 dotenv

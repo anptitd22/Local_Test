@@ -24,10 +24,11 @@ ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD')
 #arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--operation', type=str, required=False, default='upload', help='Operation to perform: upload or delete')
+parser.add_argument('--namespace', type=str, required=False, default='silver', help='Namespace of the table')
+parser.add_argument('--file', type=str, required=False, default='../../dataset/datamart/OrderHeader.csv', help='CSV file to upload')
 args = parser.parse_args()
 
 #variable
-file_path = '../../dataset/datamart/OrderHeader.csv'
 create_at = datetime.datetime.now().isoformat(timespec="seconds")
 
 #main functions
@@ -83,10 +84,10 @@ def upload_to_iceberg(df: DataFrame) -> None:
         partition_silver = PartitionSpec(
             PartitionField(field_id=1001, source_id=created_id, transform=DayTransform(), name="created_at_day")
         )
-        tbl = catalog.create_table("silver.order_header", schema=schema, partition_spec=partition_silver)
+        tbl = catalog.create_table(f"{args.namespace}.order_header", schema=schema, partition_spec=partition_silver)
     except:
-        tbl = catalog.load_table("silver.order_header")
-    
+        tbl = catalog.load_table(f"{args.namespace}.order_header")
+
     tbl.append(df)
 
     result = tbl.scan().to_arrow()
@@ -109,15 +110,16 @@ def delete_iceberg_table() -> None:
         }
     )
     try:
-        catalog.drop_table("silver.order_header")
-        print("Table 'silver.order_header' has been deleted.")
+        catalog.drop_table(f"{args.namespace}.order_header")
+        print(f"Table '{args.namespace}.order_header' has been deleted.")
     except Exception as e:
         print(f"Error deleting table: {e}")
+        raise
 
 if __name__ == "__main__":
     operation = args.operation
     if operation == 'upload':
-        df = read_csv(file_path)
+        df = read_csv(args.file)
         upload_to_iceberg(df)
     elif operation == 'delete':
         delete_iceberg_table()

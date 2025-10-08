@@ -25,10 +25,11 @@ ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD')
 #arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--operation', type=str, required=False, default='upload', help='Operation to perform: upload or delete')
+parser.add_argument('--namespace', type=str, required=False, default='silver', help='Namespace of the table')
+parser.add_argument('--file', type=str, required=False, default='../../dataset/datamart/Customers.csv', help='CSV file to upload')
 args = parser.parse_args()
 
 #variable
-file_path = '../../dataset/datamart/Customers.csv'
 create_at = datetime.datetime.now().isoformat(timespec="seconds")
 
 #main functions
@@ -76,14 +77,15 @@ def upload_to_iceberg(df: DataFrame) -> None:
         NestedField(5, "LastName", StringType(), required=False),
         NestedField(6, "CreatedAt", TimestampType(), required=True),
     )
+
     try:
         created_id = schema.find_field("CreatedAt").field_id
         partition_silver = PartitionSpec(
             PartitionField(field_id=1000, source_id=created_id, transform=DayTransform(), name="created_at_day")
         )
-        tbl = catalog.create_table("silver.customer", schema=schema, partition_spec=partition_silver)
+        tbl = catalog.create_table(f"{args.namespace}.customer", schema=schema, partition_spec=partition_silver)
     except:
-        tbl = catalog.load_table("silver.customer")
+        tbl = catalog.load_table(f"{args.namespace}.customer")
 
     tbl.append(df)
 
@@ -107,15 +109,16 @@ def delete_iceberg_table() -> None:
         }
     )
     try:
-        catalog.drop_table("silver.customer")
-        print("Table 'silver.customer' has been deleted.")
+        catalog.drop_table(f"{args.namespace}.customer")
+        print(f"Table '{args.namespace}.customer' has been deleted.")
     except Exception as e:
         print(f"Error deleting table: {e}")
+        raise
 
 if __name__ == "__main__":
     operation = args.operation
     if operation == 'upload':
-        df = read_csv(file_path)
+        df = read_csv(args.file)
         upload_to_iceberg(df)
     elif operation == 'delete':
         delete_iceberg_table()
