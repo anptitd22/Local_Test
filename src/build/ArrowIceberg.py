@@ -1,6 +1,5 @@
-import os
 import datetime
-from typing import Optional, Literal
+from typing import Literal
 
 import pyarrow as pa
 import pyarrow.csv as csv
@@ -9,45 +8,64 @@ from pyarrow import Table as DataFrame
 
 from pyiceberg.catalog import load_catalog
 from pyiceberg.schema import Schema
-from pyiceberg.types import NestedField, StringType, TimestampType, LongType
 from pyiceberg.partitioning import PartitionSpec, PartitionField
-from pyiceberg.transforms import DayTransform, IdentityTransform
+from pyiceberg.transforms import DayTransform
+from pyiceberg.types import NestedField, TimestampType
 
-class ArrowIceberg:
+class ArrowIcebergMinIO:
     def __init__(
-        self,
-        access_key: Optional[str] = None,
-        secret_key: Optional[str] = None,
-        endpoint: str = "http://localhost:9000",
-        region: str = "us-east-1",
-        warehouse: str = "s3://lakehouse",
-        catalog_uri: str = "thrift://localhost:9083",
-        namespace: str = "silver",
-        table: str = "customer",
-        partition_mode: Literal["created_at_day", "ingest_dt"] = "created_at_day",
-        io_impl: Literal["pyarrow", "hadoop"] = "pyarrow",
-        create_namespace_if_missing: bool = True,
-        format_version: str = "2",
+        self
+        , file_path: str
+        , file_type: Literal['csv']
+        , namespace: str
+        , table: str
+        , catalog: load_catalog
+        , arrow_schema: pa.Schema
+        , iceberg_schema: Schema
     ) -> None:
-        self.access_key = access_key or os.getenv("MINIO_ROOT_USER") or os.getenv("AWS_ACCESS_KEY_ID")
-        self.secret_key = secret_key or os.getenv("MINIO_ROOT_PASSWORD") or os.getenv("AWS_SECRET_ACCESS_KEY")
-        self.endpoint = endpoint
-        self.region = region
-
-        # iceberg / hive
-        self.warehouse = warehouse
-        self.catalog_uri = catalog_uri
+        self.file_path = file_path
         self.namespace = namespace
         self.table = table
-        self.partition_mode = partition_mode
-        self.io_impl = io_impl
-        self.create_namespace_if_missing = create_namespace_if_missing
-        self.format_version = format_version
+        self.catalog = catalog
+        self.arrow_schema = arrow_schema
+        self.iceberg_schema = iceberg_schema
 
-        # set env so PyArrow S3 picks creds
-        os.environ.setdefault("AWS_ACCESS_KEY_ID", self.access_key or "")
-        os.environ.setdefault("AWS_SECRET_ACCESS_KEY", self.secret_key or "")
-        os.environ.setdefault("AWS_DEFAULT_REGION", self.region)
+        if file_type not in ['csv']:
+            raise ValueError("file_type must be one of 'csv'")
+        self.file_type = file_type
+        if self.file_type == 'csv':
+            self.df = csv.read_csv(self.file_path)
 
-        # build catalog once
-        self.catalog = self._build_catalog()
+        self.df = self.df.append_column("CreatedAt", pc.strptime(pa.array([datetime.datetime.now().isoformat(timespec="seconds")] * len(self.df)), format="%Y-%m-%dT%H:%M:%S", unit="us"))
+
+    def drop_missing_data(self, field: str) -> DataFrame:
+        mask = pc.invert(pc.is_null(self.df[field]))
+        return self.df.filter(mask)
+
+    def upload_to_iceberg(self) -> None:
+
+        self.df = self.df.cast(self.arrow_schema)
+
+        try:
+            self.catalog.create_namespace(self.namespace)
+        except:
+            pass
+        
+        try:
+            created_id = self.iceberg_schema.find_field("CreatedAt").field_id
+            partition_silver = PartitionSpec(
+                PartitionField(field_id=1000, source_id=created_id, transform=DayTransform(), name="created_at_day")
+            )
+            tbl = self.catalog.create_table(f"{self.namespace}.{self.table}", schema=self.iceberg_schema, partition_spec=partition_silver)
+        except:
+            tbl = self.catalog.load_table(f"{self.namespace}.{self.table}")
+
+        tbl.append(self.df)
+        result = tbl.scan().to_arrow()
+        print(result)
+
+    def delete_iceberg_table(self) -> None:
+        try:
+            self.catalog.drop_table(f"{self.namespace}.{self.table}")
+        except Exception as e:
+            print(f"Error deleting table {self.table}: {e}")
