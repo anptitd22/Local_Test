@@ -3,7 +3,6 @@ create table if not exists <CATALOG>.<SCHEMA>.dim_product (
     , product_id bigint not null
     , product_name string
     , product_color string
-    , product_list_price decimal(18,4)
     , product_size string
     , product_sub_category bigint
     , product_category_id bigint
