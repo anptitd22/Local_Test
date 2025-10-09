@@ -1,4 +1,6 @@
 FROM apache/airflow:3.0.0
+ARG AIRFLOW_VERSION=3.0.0
+ARG CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-3.12.txt"
 
 USER root
 
@@ -17,8 +19,21 @@ USER airflow
 
 ENV PATH="/home/airflow/.local/bin:${PATH}"
 
-# install my_minio & boto3
-RUN pip install --no-cache-dir minio boto3
+RUN pip install --no-cache-dir --constraint "${CONSTRAINT_URL}" \
+    apache-airflow-providers-trino \
+    apache-airflow-providers-common-sql \
+    trino \
+    sqlalchemy-trino
+
+# install 
+RUN pip install --no-cache-dir \
+    "pyarrow==17.0.0" \
+    "pydantic<=2.12.0" \
+    minio \
+    boto3 \
+    "pyiceberg==0.10.0" \
+    "pyiceberg[hive]==0.10.0" \
+    "pyiceberg[pyiceberg-core]==0.10.0"
 
 # file dataset
 COPY ../dataset /opt/airflow/dataset

@@ -4,4 +4,7 @@ dataset/
 env/
 .idea/
 data/trino/
-logs/
+airflow/logs/
+logs*
+*logs*
+airflow/logs/dag_processor/*
