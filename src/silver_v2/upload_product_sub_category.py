@@ -17,8 +17,8 @@ from pyiceberg.types import NestedField, StringType, TimestampType, LongType
 path_env = '../../.env'
 load_dotenv(path_env)
 
-ACCESS_KEY = os.getenv('MINIO_ROOT_USER')
-ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD')
+ACCESS_KEY = os.getenv('MINIO_ROOT_USER', 'admin')
+ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD', 'admin12345')
 
 #arguments
 parser = argparse.ArgumentParser()
@@ -45,9 +45,9 @@ if __name__ == "__main__":
     catalog=load_catalog(
         "hive",
         **{
-            "uri": "thrift://localhost:9083",
+            "uri": "thrift://metastore:9083",
             "warehouse": "s3a://lakehouse",
-            "s3.endpoint": "http://localhost:9000",
+            "s3.endpoint": "http://minio:9000",
             "s3.access-key-id": ACCESS_KEY,
             "s3.secret-access-key": ACCESS_SECRET,
             "s3.path-style-access": "true",
