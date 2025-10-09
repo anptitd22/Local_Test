@@ -1,4 +1,4 @@
-INSERT INTO iceberg.silver.fact_sales
+INSERT INTO iceberg.gold.fact_sales
 (
     sales_key
     ,product_key
@@ -36,10 +36,10 @@ SELECT
     , od.order_qty as order_qty
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM iceberg.silver.stg_order_detail od
-LEFT JOIN iceberg.silver.stg_product p
+FROM iceberg.gold.stg_order_detail od
+LEFT JOIN iceberg.gold.stg_product p
 ON p.product_id = od.product_id
-LEFT JOIN iceberg.silver.stg_order_header oh
+LEFT JOIN iceberg.gold.stg_order_header oh
 ON od.sales_order_id = oh.sales_order_id
-LEFT JOIN iceberg.silver.stg_customer c
+LEFT JOIN iceberg.gold.stg_customer c
 ON oh.customer_id = c.customer_id;

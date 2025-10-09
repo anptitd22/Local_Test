@@ -1,4 +1,4 @@
-create table if not exists iceberg.silver.dim_date (
+create table if not exists iceberg.gold.dim_date (
     date_key bigint      
     ,the_date DATE 
     , year INTEGER

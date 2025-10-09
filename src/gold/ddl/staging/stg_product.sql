@@ -1,4 +1,4 @@
-create table if not exists iceberg.silver.stg_product (
+create table if not exists iceberg.gold.stg_product (
     product_id bigint
     , name varchar
     , color varchar

@@ -1,4 +1,4 @@
-create table if not exists iceberg.silver.fact_sales (
+create table if not exists iceberg.gold.fact_sales (
     sales_key bigint
     , product_key bigint 
     , customer_key bigint 

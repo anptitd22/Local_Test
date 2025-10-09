@@ -1,4 +1,4 @@
-INSERT INTO iceberg.silver.dim_product
+INSERT INTO iceberg.gold.dim_product
 (
     product_key
     , product_id
@@ -24,8 +24,8 @@ SELECT
     , pc.name as category_name
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM iceberg.silver.stg_product p
-LEFT JOIN iceberg.silver.stg_product_sub_category psc
+FROM iceberg.gold.stg_product p
+LEFT JOIN iceberg.gold.stg_product_sub_category psc
 ON p.product_sub_category_id = psc.product_sub_category_id
-LEFT JOIN iceberg.silver.stg_product_category pc
+LEFT JOIN iceberg.gold.stg_product_category pc
 ON psc.product_category_id = pc.product_category_id;

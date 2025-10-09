@@ -1,4 +1,4 @@
-create table if not exists iceberg.silver.dim_product (
+create table if not exists iceberg.gold.dim_product (
     product_key bigint 
     , product_id bigint 
     , product_category_id bigint

@@ -1,4 +1,4 @@
-INSERT INTO iceberg.silver.dim_customer
+INSERT INTO iceberg.gold.dim_customer
 (
     customer_key
     , customer_id
@@ -20,4 +20,4 @@ SELECT
     , concat(first_name, ' ', middle_name, ' ', last_name) as full_name
     , current_timestamp as created_at
     , current_timestamp as updated_at
-FROM iceberg.silver.stg_customer;
+FROM iceberg.gold.stg_customer;

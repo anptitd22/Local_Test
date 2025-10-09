@@ -1,4 +1,4 @@
-create table if not exists iceberg.silver.stg_customer (
+create table if not exists iceberg.gold.stg_customer (
     customer_id bigint
     , account_number varchar
     , first_name varchar

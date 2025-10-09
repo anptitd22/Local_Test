@@ -1,4 +1,4 @@
-INSERT INTO iceberg.silver.dim_order
+INSERT INTO iceberg.gold.dim_order
 (
     sales_order_key
     , sales_order_id
@@ -26,6 +26,6 @@ SELECT
     , year(oh.order_date) as order_year
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM iceberg.silver.stg_order_detail od
-LEFT JOIN iceberg.silver.stg_order_header oh
+FROM iceberg.gold.stg_order_detail od
+LEFT JOIN iceberg.gold.stg_order_header oh
 ON od.sales_order_id = oh.sales_order_id;

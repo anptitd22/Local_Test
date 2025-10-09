@@ -1,4 +1,4 @@
-create table if not exists iceberg.silver.dim_customer (
+create table if not exists iceberg.gold.dim_customer (
     customer_key bigint 
     , customer_id bigint 
     , account_number VARCHAR

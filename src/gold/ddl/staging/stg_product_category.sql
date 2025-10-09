@@ -1,4 +1,4 @@
-create table if not exists iceberg.silver.stg_product_category (
+create table if not exists iceberg.gold.stg_product_category (
     product_category_id bigint 
     , name varchar
     , created_at timestamp

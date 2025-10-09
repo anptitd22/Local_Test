@@ -1,4 +1,4 @@
-INSERT INTO iceberg.silver.stg_order_header
+INSERT INTO iceberg.gold.stg_order_header
 (
     sales_order_id  
     , order_date

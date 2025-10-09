@@ -1,4 +1,4 @@
-INSERT INTO iceberg.silver.stg_product_category
+INSERT INTO iceberg.gold.stg_product_category
 (
     product_category_id  
     , name 

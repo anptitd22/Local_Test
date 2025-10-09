@@ -1,4 +1,4 @@
-INSERT INTO iceberg.silver.stg_customer
+INSERT INTO iceberg.gold.stg_customer
 (
     customer_id
     , account_number
@@ -16,4 +16,4 @@ SELECT
     , CAST(lastname AS VARCHAR) AS last_name
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM iceberg.silver.customers;
+FROM iceberg.gold.customers;

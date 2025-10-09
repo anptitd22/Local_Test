@@ -1,4 +1,4 @@
-INSERT INTO iceberg.silver.stg_order_detail
+INSERT INTO iceberg.gold.stg_order_detail
 (
     sales_order_id  
     , sales_order_detail_id  

@@ -1,4 +1,4 @@
-create table if not exists iceberg.silver.stg_order_header (
+create table if not exists iceberg.gold.stg_order_header (
     sales_order_id bigint 
     , order_date timestamp
     , ship_date timestamp

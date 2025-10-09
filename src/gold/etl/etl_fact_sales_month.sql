@@ -1,6 +1,6 @@
-TRUNCATE TABLE iceberg.silver.fact_sales_month;
+TRUNCATE TABLE iceberg.gold.fact_sales_month;
 
-INSERT INTO iceberg.silver.fact_sales_month
+INSERT INTO iceberg.gold.fact_sales_month
 (
     sales_month_key
     , customer_key
@@ -22,8 +22,8 @@ SELECT
     , SUM(fs.order_unit_sub_total) as month_sub_total
     , do.order_month as month
     , do.order_year as year
-FROM iceberg.silver.fact_sales fs
-LEFT JOIN iceberg.silver.dim_order do
+FROM iceberg.gold.fact_sales fs
+LEFT JOIN iceberg.gold.dim_order do
 ON fs.sales_order_key = do.sales_order_key
 GROUP BY
     fs.customer_key
