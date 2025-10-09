@@ -24,6 +24,7 @@ ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD')
 parser = argparse.ArgumentParser()
 parser.add_argument('--operation', type=str, required=False, default='upload', help='Operation to perform: upload or delete')
 parser.add_argument('--namespace', type=str, required=False, default='silver', help='Namespace of the table')
+parser.add_argument('--namespace_etl', type=str, required=False, default='gold', help='Namespace of the ETL table')
 parser.add_argument('--file', type=str, required=False, default='../../dataset/datamart/Product.csv', help='CSV file to upload')
 parser.add_argument('--table', type=str, required=False, default='products', help='Table name to upload or delete')
 args = parser.parse_args()
@@ -66,6 +67,7 @@ if __name__ == "__main__":
         file_path=args.file
         , file_type='csv'
         , namespace=args.namespace
+        , namespace_etl=args.namespace_etl
         , table=args.table
         , catalog=catalog
         , arrow_schema=arrow_schema

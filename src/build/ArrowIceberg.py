@@ -18,6 +18,7 @@ class ArrowIcebergMinIO:
         , file_path: str
         , file_type: Literal['csv']
         , namespace: str
+        , namespace_etl: str
         , table: str
         , catalog: load_catalog
         , arrow_schema: pa.Schema
@@ -25,6 +26,7 @@ class ArrowIcebergMinIO:
     ) -> None:
         self.file_path = file_path
         self.namespace = namespace
+        self.namespace_etl = namespace_etl
         self.table = table
         self.catalog = catalog
         self.arrow_schema = arrow_schema
@@ -48,6 +50,11 @@ class ArrowIcebergMinIO:
 
         try:
             self.catalog.create_namespace(self.namespace)
+        except:
+            pass
+
+        try:
+            self.catalog.create_namespace(self.namespace_etl)
         except:
             pass
         

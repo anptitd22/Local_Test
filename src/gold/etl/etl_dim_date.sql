@@ -12,6 +12,5 @@ SELECT
     format_datetime(d, 'MMMM') AS month_name,
     (day_of_week(d) IN (6, 7)) AS is_weekend,
     FALSE AS is_holiday,
-    week_of_year(d) AS week_of_year,
-    CASE WHEN month(d) >= 7 THEN year(d) + 1 ELSE year(d) END AS fiscal_year
+    week_of_year(d) AS week_of_year
 FROM UNNEST(sequence(DATE '2010-01-01', DATE '2025-12-31', INTERVAL '1' DAY)) AS t(d);

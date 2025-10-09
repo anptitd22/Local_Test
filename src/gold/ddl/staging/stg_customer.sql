@@ -1,12 +1,11 @@
 create table if not exists iceberg.silver.stg_customer (
-    customer_id
-    , account_number
-    , first_name
-    , middle_name
-    , last_name
-    , full_name
-    , created_at
-    , updated_at
+    customer_id bigint
+    , account_number varchar
+    , first_name varchar
+    , middle_name varchar
+    , last_name varchar
+    , created_at timestamp
+    , updated_at timestamp
 )
 WITH (
     format = 'PARQUET',

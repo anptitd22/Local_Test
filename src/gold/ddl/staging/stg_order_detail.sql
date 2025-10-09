@@ -5,6 +5,8 @@ create table if not exists iceberg.silver.stg_order_detail (
     , order_qty bigint
     , unit_price decimal(18,4)
     , unit_price_discount decimal(18,4)
+    , created_at timestamp
+    , updated_at timestamp
 )
 WITH (
     format = 'PARQUET',

@@ -11,7 +11,6 @@ create table if not exists iceberg.silver.dim_date (
     , is_weekend BOOLEAN
     , is_holiday BOOLEAN
     , week_of_year INTEGER
-    , fiscal_year INTEGER
 )
 WITH (
     format = 'PARQUET',

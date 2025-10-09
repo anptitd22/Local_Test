@@ -1,5 +1,5 @@
 create table if not exists iceberg.silver.dim_order (
-    sales_order_key bigint 
+    sales_order_key bigint   --sales_order_detail_id :V
     , sales_order_id bigint 
     , sales_order_detail_id bigint
     , product_id bigint
