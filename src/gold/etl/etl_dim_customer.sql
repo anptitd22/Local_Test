@@ -17,7 +17,7 @@ SELECT
     , first_name
     , middle_name
     , last_name
-    , full_name
+    , concat(first_name, ' ', middle_name, ' ', last_name) as full_name
     , current_timestamp as created_at
     , current_timestamp as updated_at
 FROM iceberg.silver.stg_customer;

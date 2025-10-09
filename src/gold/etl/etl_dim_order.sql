@@ -22,10 +22,10 @@ SELECT
     , oh.order_date as order_date
     , oh.ship_date as ship_date
     , oh.sales_order_number as sales_order_number
-    , month(oh.orderdate) as order_month
-    , year(oh.orderdate) as order_year
+    , month(oh.order_date) as order_month
+    , year(oh.order_date) as order_year
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
 FROM iceberg.silver.stg_order_detail od
-JOIN iceberg.silver.stg_order_header oh
+LEFT JOIN iceberg.silver.stg_order_header oh
 ON od.sales_order_id = oh.sales_order_id;

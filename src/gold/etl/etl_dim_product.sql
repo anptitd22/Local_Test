@@ -25,7 +25,7 @@ SELECT
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
 FROM iceberg.silver.stg_product p
-JOIN iceberg.silver.stg_product_sub_category psc
-ON p.productsubcategoryid = psc.productsubcategoryid
-JOIN iceberg.silver.stg_product_category pc
-ON psc.productcategoryid = pc.productcategoryid;
+LEFT JOIN iceberg.silver.stg_product_sub_category psc
+ON p.product_sub_category_id = psc.product_sub_category_id
+LEFT JOIN iceberg.silver.stg_product_category pc
+ON psc.product_category_id = pc.product_category_id;
