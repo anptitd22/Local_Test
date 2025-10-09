@@ -4,3 +4,4 @@ dataset/
 env/
 .idea/
 data/trino/
+logs/
