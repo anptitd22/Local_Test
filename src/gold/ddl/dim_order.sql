@@ -6,7 +6,7 @@ create table if not exists iceberg.silver.dim_order (
     , customer_id bigint
     , order_date timestamp
     , ship_date timestamp
-    , sales_order_number VARCHAR
+    , sales_order_number varchar
     , order_month int 
     , order_year int
     , created_at timestamp
