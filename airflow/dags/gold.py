@@ -15,9 +15,9 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 with DAG(
-    'bronze_to_silver',
+    'silver',
     default_args=default_args,
-    description='bronze_to_silver for health_care data',
+    description='silver for e-commerce data',
     tags=['silver'],
     schedule='*/30 * * * *',  #'0 10 * * *' Chạy hàng ngày 10h
     catchup=False
