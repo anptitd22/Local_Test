@@ -11,13 +11,13 @@ INSERT INTO iceberg.silver.dim_customer
     , updated_at
     )
 SELECT
-    customerid as customer_key
-    , customerid as customer_id
-    , accountnumber as account_number
-    , firstname as first_name
-    , middlename as middle_name
-    , lastname as last_name
-    , concat_ws(' ', firstname, middlename, lastname) AS full_name
-    , current_timestamp AS created_at
-    , current_timestamp AS updated_at
-FROM iceberg.silver.customer;
+    customer_id as customer_key
+    , customer_id as customer_id
+    , account_number
+    , first_name
+    , middle_name
+    , last_name
+    , full_name
+    , current_timestamp as created_at
+    , current_timestamp as updated_at
+FROM iceberg.silver.stg_customer;

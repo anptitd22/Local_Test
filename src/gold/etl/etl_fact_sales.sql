@@ -24,22 +24,22 @@ SELECT
             )
         ) 
     )) AS sales_key
-    , p.productid as product_key
-    , c.customerid as customer_key
-    , od.salesorderid as sales_order_key
+    , p.product_id as product_key
+    , c.customer_id as customer_key
+    , od.sales_order_id as sales_order_key
     , CAST(format_datetime(oh.orderdate, 'yyyyMMd') AS BIGINT) * 1 
         + (CASE WHEN length(format_datetime(oh.orderdate, 'yyyyMMdd')) = 7 THEN 0 ELSE 0 END) AS date_key
-    , p.listprice as product_list_price
-    , od.unitprice as order_unit_price
-    , od.unitpricediscount as order_unit_price_discount
-    , oh.subtotal as order_sub_total_group
-    , od.orderqty as order_qty
+    , p.list_price as product_list_price
+    , od.unit_price as order_unit_price
+    , od.unit_price_discount as order_unit_price_discount
+    , oh.sub_total as order_sub_total_group
+    , od.order_qty as order_qty
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM iceberg.silver.product p
-JOIN iceberg.silver.order_detail od
-ON p.productid = od.productid
-JOIN iceberg.silver.order_header oh
-ON od.salesorderid = oh.salesorderid
-JOIN iceberg.silver.customer c
-ON oh.customerid = c.customerid;
+FROM iceberg.silver.stg_product p
+JOIN iceberg.silver.stg_order_detail od
+ON p.product_id = od.product_id
+JOIN iceberg.silver.stg_order_header oh
+ON od.sales_order_id = oh.sales_order_id
+JOIN iceberg.silver.stg_customer c
+ON oh.customer_id = c.customer_id;

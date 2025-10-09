@@ -13,10 +13,10 @@ INSERT INTO iceberg.silver.dim_product
     , updated_at
 )
 SELECT
-    p.productid as product_key
-    , p.productid as product_id
-    , pc.productcategoryid as product_category_id
-    , psc.productsubcategoryid as product_sub_category_id
+    p.product_id as product_key
+    , p.product_id as product_id
+    , pc.product_category_id as product_category_id
+    , psc.product_sub_category_id as product_sub_category_id
     , p.name as product_name
     , p.color as product_color
     , p.size as product_size
@@ -24,8 +24,8 @@ SELECT
     , pc.name as category_name
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM iceberg.silver.product p
-JOIN iceberg.silver.product_sub_category psc
+FROM iceberg.silver.stg_product p
+JOIN iceberg.silver.stg_product_sub_category psc
 ON p.productsubcategoryid = psc.productsubcategoryid
-JOIN iceberg.silver.product_category pc
+JOIN iceberg.silver.stg_product_category pc
 ON psc.productcategoryid = pc.productcategoryid;
