@@ -1,9 +1,7 @@
 from datetime import datetime, timedelta
-from airflow.providers.standard.operators.empty import EmptyOperator
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.providers.standard.operators.empty import BashOperator
 from airflow.utils.task_group import TaskGroup
 from airflow import DAG
-from src.silver_v2 import upload_customer, upload_product, upload_order_header, upload_order_detail, upload_product_category, upload_product_sub_category
 
 default_args = {
     'owner': 'TEST',
@@ -22,29 +20,106 @@ with DAG(
     schedule='*/30 * * * *',  #'0 10 * * *' Chạy hàng ngày 10h
     catchup=False
 ) as dag:
-    with TaskGroup("data_silver") as data_silver_group:
-        customer_task = PythonOperator(
-            task_id='upload_customer',
-            python_callable=upload_customer,
+    with TaskGroup("create_staging") as create_staging_group:
+        stg_customer_task = BashOperator(
+            task_id='stg_customer',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_customer.sql",
         )
-        product_task = PythonOperator(
-            task_id='upload_product',
-            python_callable=upload_product,
+        stg_product_task = BashOperator(
+            task_id='stg_product',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_product.sql",
         )
-        order_header_task = PythonOperator(
-            task_id='upload_order_header',
-            python_callable=upload_order_header,
+        stg_order_header_task = BashOperator(
+            task_id='stg_order_header',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_order_header.sql",
         )
-        order_detail_task = PythonOperator(
-            task_id='upload_order_detail',
-            python_callable=upload_order_detail,
+        stg_order_detail_task = BashOperator(
+            task_id='stg_order_detail',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_order_detail.sql",
         )
-        product_category_task = PythonOperator(
-            task_id='upload_product_category',
-            python_callable=upload_product_category,
+        stg_product_category_task = BashOperator(
+            task_id='stg_product_category',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_product_category.sql",
         )
-        product_sub_category_task = PythonOperator(
-            task_id='upload_product_sub_category',
-            python_callable=upload_product_sub_category,
+        stg_product_sub_category_task = BashOperator(
+            task_id='stg_product_sub_category',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_product_sub_category.sql",
         )
-        customer_task >> product_task >> order_header_task >> order_detail_task >> product_category_task >> product_sub_category_task
+        stg_customer_task >> stg_product_task >> stg_order_header_task >> stg_order_detail_task >> stg_product_category_task >> stg_product_sub_category_task
+    
+    with TaskGroup("etl_staging") as etl_staging_group:
+        etl_stg_customer_task = BashOperator(
+            task_id='etl_stg_customer',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_customer.sql",
+        )
+        etl_stg_product_task = BashOperator(
+            task_id='etl_stg_product',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_product.sql",
+        )
+        etl_stg_order_header_task = BashOperator(
+            task_id='etl_stg_order_header',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_order_header.sql",
+        )
+        etl_stg_order_detail_task = BashOperator(
+            task_id='etl_stg_order_detail',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_order_detail.sql",
+        )
+        etl_stg_product_category_task = BashOperator(
+            task_id='etl_stg_product_category',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_product_category.sql",
+        )
+        etl_stg_product_sub_category_task = BashOperator(
+            task_id='etl_stg_product_sub_category',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_product_sub_category.sql",
+        )
+        etl_stg_customer_task >> etl_stg_product_task >> etl_stg_order_header_task >> etl_stg_order_detail_task >> etl_stg_product_category_task >> etl_stg_product_sub_category_task
+    
+    with TaskGroup("create_dimension") as create_dimension_group:
+        dim_customer_task = BashOperator(
+            task_id='dim_customer',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/ddl/dim_customer.sql",
+        )
+        dim_product_task = BashOperator(
+            task_id='dim_product',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/ddl/dim_product.sql",
+        )
+        dim_order_task = BashOperator(
+            task_id='dim_order',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/ddl/dim_order.sql",
+        )
+        dim_date_task = BashOperator(
+            task_id='dim_date',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/ddl/dim_date.sql",
+        )
+        dim_customer_task >> dim_product_task >> dim_order_task >> dim_date_task
+    
+    with TaskGroup("etl_dimension") as etl_dimension_group:
+        etl_dim_customer_task = BashOperator(
+            task_id='etl_dim_customer',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/etl/etl_dim_customer.sql",
+        )
+        etl_dim_product_task = BashOperator(
+            task_id='etl_dim_product',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/etl/etl_dim_product.sql",
+        )
+        etl_dim_order_task = BashOperator(
+            task_id='etl_dim_order',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/etl/etl_dim_order.sql",
+        )
+        etl_dim_date_task = BashOperator(
+            task_id='etl_dim_date',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/etl/etl_dim_date.sql",
+        )
+        etl_dim_customer_task >> etl_dim_product_task >> etl_dim_order_task >> etl_dim_date_task
+    
+    with TaskGroup("create_fact") as create_fact_group:
+        fact_sales_task = BashOperator(
+            task_id='fact_sales',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/ddl/fact_sales.sql",
+        )
+    with TaskGroup("etl_fact") as etl_fact_group:
+        etl_fact_sales_task = BashOperator(
+            task_id='etl_fact_sales',
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema gold --file /tmp/gold/etl/etl_fact_sales.sql",
+        )
+    create_staging_group >> etl_staging_group >> create_dimension_group >> etl_dimension_group >> create_fact_group >> etl_fact_group
