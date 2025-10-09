@@ -69,6 +69,7 @@ if __name__ == "__main__":
         , arrow_schema=arrow_schema
         , iceberg_schema=iceberg_schema
     )
+    iceberg.drop_missing_data("CustomerID")
 
     if args.operation == 'upload':
         iceberg.upload_to_iceberg()
