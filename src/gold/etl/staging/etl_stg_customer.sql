@@ -16,4 +16,4 @@ SELECT
     , CAST(lastname AS VARCHAR) AS last_name
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
-FROM iceberg.gold.customers;
+FROM iceberg.silver.customers;
