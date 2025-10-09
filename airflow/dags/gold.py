@@ -23,54 +23,54 @@ with DAG(
     with TaskGroup("create_staging") as create_staging_group:
         stg_customer_task = BashOperator(
             task_id='stg_customer',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_customer.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/staging/stg_customer.sql",
         )
         stg_product_task = BashOperator(
             task_id='stg_product',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_product.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/staging/stg_product.sql",
         )
         stg_order_header_task = BashOperator(
             task_id='stg_order_header',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_order_header.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/staging/stg_order_header.sql",
         )
         stg_order_detail_task = BashOperator(
             task_id='stg_order_detail',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_order_detail.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/staging/stg_order_detail.sql",
         )
         stg_product_category_task = BashOperator(
             task_id='stg_product_category',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_product_category.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/staging/stg_product_category.sql",
         )
         stg_product_sub_category_task = BashOperator(
             task_id='stg_product_sub_category',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/stg_product_sub_category.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/ddl/staging/stg_product_sub_category.sql",
         )
         stg_customer_task >> stg_product_task >> stg_order_header_task >> stg_order_detail_task >> stg_product_category_task >> stg_product_sub_category_task
     
     with TaskGroup("etl_staging") as etl_staging_group:
         etl_stg_customer_task = BashOperator(
             task_id='etl_stg_customer',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_customer.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/staging/etl_stg_customer.sql",
         )
         etl_stg_product_task = BashOperator(
             task_id='etl_stg_product',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_product.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/staging/etl_stg_product.sql",
         )
         etl_stg_order_header_task = BashOperator(
             task_id='etl_stg_order_header',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_order_header.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/staging/etl_stg_order_header.sql",
         )
         etl_stg_order_detail_task = BashOperator(
             task_id='etl_stg_order_detail',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_order_detail.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/staging/etl_stg_order_detail.sql",
         )
         etl_stg_product_category_task = BashOperator(
             task_id='etl_stg_product_category',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_product_category.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/staging/etl_stg_product_category.sql",
         )
         etl_stg_product_sub_category_task = BashOperator(
             task_id='etl_stg_product_sub_category',
-            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/etl_stg_product_sub_category.sql",
+            bash_command="docker exec -it trino trino --server http://trino:8080 --catalog iceberg --schema silver --file /tmp/gold/etl/staging/etl_stg_product_sub_category.sql",
         )
         etl_stg_customer_task >> etl_stg_product_task >> etl_stg_order_header_task >> etl_stg_order_detail_task >> etl_stg_product_category_task >> etl_stg_product_sub_category_task
     
