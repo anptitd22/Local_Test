@@ -18,15 +18,16 @@ SELECT
         xxhash64(
             to_utf8(
                 cast(c.customer_id  as varchar) || ':' ||
+                cast(od.sales_order_detail_id as varchar) || ':' ||
+                cast(oh.order_date as varchar) || ':' ||
                 cast(p.product_id as varchar) || ':' ||
-                cast(od.sales_order_id as varchar) || ':' ||
-                cast(oh.order_date as varchar)
+                cast(current_timestamp as varchar)
             )
         ) 
     )) AS sales_key
     , p.product_id as product_key
     , c.customer_id as customer_key
-    , od.sales_order_id as sales_order_key
+    , od.sales_order_detail_id as sales_order_key
     , CAST(format_datetime(oh.order_date, 'yyyyMMd') AS BIGINT) * 1 
         + (CASE WHEN length(format_datetime(oh.order_date, 'yyyyMMdd')) = 7 THEN 0 ELSE 0 END) AS date_key
     , p.list_price as product_list_price
