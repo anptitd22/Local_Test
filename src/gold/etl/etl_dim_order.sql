@@ -71,7 +71,7 @@ WHEN NOT MATCHED THEN
             xxhash64(
                 to_utf8(
                     cast(src.sales_order_detail_id as varchar) || ':' ||
-                    cast(current_timestamp as varchar)
+                    cast(src.updated_at as varchar)
                 )
             )
         ))

@@ -53,7 +53,7 @@ WHEN NOT MATCHED THEN
             xxhash64(
                 to_utf8(
                     cast(src.customer_id as varchar) || ':' ||
-                    cast(current_timestamp as varchar)
+                    cast(src.updated_at as varchar)
                 )
             )
         ))
