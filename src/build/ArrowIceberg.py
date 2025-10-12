@@ -65,9 +65,32 @@ class ArrowIcebergMinIO:
             )
             tbl = self.catalog.create_table(f"{self.namespace}.{self.table}", schema=self.iceberg_schema, partition_spec=partition_silver)
         except:
-            tbl = self.catalog.load_table(f"{self.namespace}.{self.table}")
+            # self.catalog.drop_table(f"{self.namespace}.{self.table}")
+            # created_id = self.iceberg_schema.find_field("CreatedAt").field_id
+            # partition_silver = PartitionSpec(
+            #     PartitionField(field_id=1000, source_id=created_id, transform=DayTransform(), name="created_at_day")
+            # )
+            # tbl = self.catalog.create_table(f"{self.namespace}.{self.table}", schema=self.iceberg_schema, partition_spec=partition_silver)
 
-        tbl.append(self.df)
+            tbl = self.catalog.load_table(f"{self.namespace}.{self.table}")
+        
+        current_date_str =  datetime.datetime.now().date().strftime("%Y-%m-%d")
+
+        try:
+            tbl.delete(f"created_at_day = '{current_date_str}'")
+            print(f"Đã xóa dữ liệu ngày {current_date_str}")
+        except Exception as e:
+            print(f"Không thể xóa dữ liệu ngày {current_date_str}: {e}")
+
+        try:
+            tbl.overwrite(self.df)
+            print(f"Đã overwrite dữ liệu ngày {current_date_str} với {len(self.df)} records")
+        except Exception as e:
+            print(f"Partition chưa tồn tại, append mới: {e}")
+            tbl.append(self.df)
+            print(f"Đã append {len(self.df)} records cho ngày {current_date_str}")
+
+        # tbl.append(self.df)
         result = tbl.scan().to_arrow()
         print(result)
 

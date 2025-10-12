@@ -32,7 +32,7 @@ args = parser.parse_args()
 if __name__ == "__main__":
     arrow_schema = pa.schema([
         pa.field("CustomerID", pa.int64(),  nullable=False),
-        pa.field("AccountNumber", pa.string(), nullable=False),
+        pa.field("AccountNumber", pa.string(), nullable=True),
         pa.field("FirstName", pa.string(), nullable=True),
         pa.field("MiddleName", pa.string(), nullable=True),
         pa.field("LastName", pa.string(), nullable=True),
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     ])
     iceberg_schema = Schema(
         NestedField(field_id=1, name="CustomerID", field_type=LongType(), required=True),
-        NestedField(field_id=2, name="AccountNumber", field_type=StringType(), required=True),
+        NestedField(field_id=2, name="AccountNumber", field_type=StringType(), required=False),
         NestedField(field_id=3, name="FirstName", field_type=StringType(), required=False),
         NestedField(field_id=4, name="MiddleName", field_type=StringType(), required=False),
         NestedField(field_id=5, name="LastName", field_type=StringType(), required=False),

@@ -6,10 +6,11 @@ create table if not exists iceberg.gold.dim_customer (
     , first_name VARCHAR
     , last_name VARCHAR
     , full_name VARCHAR
-    , created_at timestamp
-    , updated_at timestamp
+    , is_current BOOLEAN 
+    , active_start timestamp 
+    , active_end timestamp 
 )
 WITH (
     format = 'PARQUET',
-    partitioning = ARRAY['day(updated_at)']
+    partitioning = ARRAY['day(active_start)']
 );
