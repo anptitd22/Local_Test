@@ -10,8 +10,8 @@ create table if not exists iceberg.gold.dim_order (
     , order_month int 
     , order_year int
     , is_current BOOLEAN 
-    , active_start timestamp 
-    , active_end timestamp
+    , active_start timestamp  with time zone
+    , active_end timestamp with time zone
 )
 WITH (
     format = 'PARQUET',

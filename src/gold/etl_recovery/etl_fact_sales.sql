@@ -38,8 +38,8 @@ SELECT
     , ABS(from_big_endian_64(
             xxhash64(
                 to_utf8(
-                    cast(customer_id as varchar) || ':' ||
-                    cast(updated_at as varchar)
+                    cast(c.customer_id as varchar) || ':' ||
+                    cast(c.updated_at as varchar)
                 )
             )
         )) as customer_key

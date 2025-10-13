@@ -7,8 +7,8 @@ create table if not exists iceberg.gold.dim_customer (
     , last_name VARCHAR
     , full_name VARCHAR
     , is_current BOOLEAN 
-    , active_start timestamp 
-    , active_end timestamp 
+    , active_start timestamp with time zone 
+    , active_end timestamp with time zone
 )
 WITH (
     format = 'PARQUET',

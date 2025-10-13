@@ -1,3 +1,5 @@
+TRUNCATE TABLE iceberg.gold.dim_date;
+
 INSERT INTO iceberg.gold.dim_date
 SELECT
     CAST(format_datetime(d, 'yyyyMMd') AS BIGINT) * 1 

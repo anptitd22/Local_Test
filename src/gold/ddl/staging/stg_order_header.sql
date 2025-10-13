@@ -5,8 +5,8 @@ create table if not exists iceberg.gold.stg_order_header (
     , sales_order_number varchar
     , customer_id bigint
     , sub_total decimal(18,4)
-    , created_at timestamp 
-    , updated_at timestamp
+    , created_at timestamp with time zone
+    , updated_at timestamp with time zone
 )
 WITH (
     format = 'PARQUET',
