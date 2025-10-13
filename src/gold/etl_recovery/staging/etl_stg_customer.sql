@@ -1,5 +1,4 @@
-DELETE FROM iceberg.gold.stg_customer 
-WHERE date(updated_at) = current_date;
+TRUNCATE TABLE iceberg.gold.stg_customer;
 
 INSERT INTO iceberg.gold.stg_customer
 (
@@ -20,4 +19,3 @@ SELECT
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
 FROM iceberg.silver.customers;
-WHERE date(createdat) = current_date;

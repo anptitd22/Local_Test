@@ -1,5 +1,4 @@
-DELETE FROM iceberg.gold.stg_product
-WHERE date(updated_at) = current_date;
+TRUNCATE TABLE iceberg.gold.stg_product;
 
 INSERT INTO iceberg.gold.stg_product
 (
@@ -22,4 +21,3 @@ SELECT
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
 FROM iceberg.silver.products;
--- WHERE date(createdat) = current_date;

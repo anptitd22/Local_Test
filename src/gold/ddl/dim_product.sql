@@ -3,15 +3,17 @@ create table if not exists iceberg.gold.dim_product (
     , product_id bigint 
     , product_category_id bigint
     , product_sub_category_id bigint
+    , product_list_price decimal(18,4)
     , product_name varchar
     , product_color varchar
     , product_size varchar
     , sub_category_name varchar
     , category_name varchar
-    , created_at timestamp
-    , updated_at timestamp
+    , is_current BOOLEAN 
+    , active_start timestamp 
+    , active_end timestamp
 )
 WITH (
     format = 'PARQUET',
-    partitioning = ARRAY['day(updated_at)']
+    partitioning = ARRAY['day(active_start)']
 );

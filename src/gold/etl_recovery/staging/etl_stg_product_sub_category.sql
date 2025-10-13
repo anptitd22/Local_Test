@@ -1,5 +1,4 @@
-DELETE FROM iceberg.gold.stg_product_sub_category
-WHERE date(updated_at) = current_date;
+TRUNCATE TABLE iceberg.gold.stg_product_sub_category;
 
 INSERT INTO iceberg.gold.stg_product_sub_category
 (
@@ -16,4 +15,3 @@ SELECT
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
 FROM iceberg.silver.product_sub_categories;
--- WHERE date(createdat) = current_date;

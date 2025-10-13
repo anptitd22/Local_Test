@@ -1,23 +1,69 @@
-INSERT INTO iceberg.gold.dim_customer
-(
-    customer_key
-    , customer_id
-    , account_number
-    , first_name
-    , middle_name
-    , last_name
-    , full_name
-    , created_at
-    , updated_at
+UPDATE iceberg.gold.dim_customer 
+SET is_current = false,
+    active_end   = current_timestamp
+WHERE is_current = true and date(active_start) = date(current_date) 
+  AND NOT EXISTS (
+    SELECT 1
+    FROM iceberg.gold.stg_customer s
+    WHERE s.customer_id = customer_id and date(s.updated_at) = date(current_date)
+  );
+
+MERGE INTO iceberg.gold.dim_customer AS trg
+USING (
+    SELECT
+        customer_id
+        , account_number
+        , first_name
+        , middle_name
+        , last_name
+        , concat_ws(' ', first_name, middle_name, last_name) AS full_name
+        , updated_at
+    FROM iceberg.gold.stg_customer
+) AS src
+ON trg.customer_id = src.customer_id
+AND trg.is_current = TRUE AND date(trg.active_start) = date(src.updated_at)
+
+-- update
+WHEN MATCHED AND (
+       trg.account_number <> src.account_number
+    OR trg.first_name <> src.first_name
+    OR trg.middle_name <> src.middle_name
+    OR trg.last_name <> src.last_name
+    OR trg.full_name <> src.full_name
+) THEN
+    UPDATE SET
+        is_current = FALSE,
+        active_end = src.updated_at
+-- insert
+WHEN NOT MATCHED THEN
+    INSERT (
+        customer_key
+        , customer_id
+        , account_number
+        , first_name
+        , middle_name
+        , last_name
+        , full_name
+        , is_current
+        , active_start
+        , active_end
     )
-SELECT
-    customer_id as customer_key
-    , customer_id as customer_id
-    , account_number
-    , first_name
-    , middle_name
-    , last_name
-    , concat(first_name, ' ', middle_name, ' ', last_name) as full_name
-    , current_timestamp as created_at
-    , current_timestamp as updated_at
-FROM iceberg.gold.stg_customer;
+    VALUES (
+        ABS(from_big_endian_64(
+            xxhash64(
+                to_utf8(
+                    cast(src.customer_id as varchar) || ':' ||
+                    cast(src.updated_at as varchar)
+                )
+            )
+        ))
+        , src.customer_id
+        , src.account_number
+        , src.first_name
+        , src.middle_name
+        , src.last_name
+        , src.full_name
+        , TRUE
+        , src.updated_at
+        , TIMESTAMP '9999-12-31'
+    );

@@ -1,5 +1,4 @@
-DELETE FROM iceberg.gold.stg_order_detail
-WHERE date(updated_at) = current_date;
+TRUNCATE TABLE iceberg.gold.stg_order_detail;
 
 INSERT INTO iceberg.gold.stg_order_detail
 (
@@ -22,4 +21,3 @@ SELECT
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
 FROM iceberg.silver.order_details;
--- WHERE date(createdat) = current_date;

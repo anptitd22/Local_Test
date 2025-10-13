@@ -1,8 +1,6 @@
-TRUNCATE TABLE iceberg.gold.dim_date;
-
 INSERT INTO iceberg.gold.dim_date
 SELECT
-    CAST(format_datetime(d, 'yyyyMMdd') AS BIGINT) * 1 
+    CAST(format_datetime(d, 'yyyyMMd') AS BIGINT) * 1 
         + (CASE WHEN length(format_datetime(d, 'yyyyMMdd')) = 7 THEN 0 ELSE 0 END) AS date_key,
     d AS the_date,
     year(d) AS year,

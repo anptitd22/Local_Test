@@ -5,7 +5,7 @@ create table if not exists iceberg.gold.stg_customer (
     , middle_name varchar
     , last_name varchar
     , created_at timestamp
-    , updated_at timestamp
+    , updated_at timestamp 
 )
 WITH (
     format = 'PARQUET',
