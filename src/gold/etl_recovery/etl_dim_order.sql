@@ -1,3 +1,5 @@
+TRUNCATE TABLE iceberg.gold.dim_order;
+
 INSERT INTO iceberg.gold.dim_order
 (
     sales_order_key
@@ -10,11 +12,19 @@ INSERT INTO iceberg.gold.dim_order
     , sales_order_number
     , order_month
     , order_year
-    , created_at
-    , updated_at
+    , is_current BOOLEAN 
+    , active_start timestamp 
+    , active_end timestamp 
 )
 SELECT
-    od.sales_order_detail_id as sales_order_key
+    ABS(from_big_endian_64(
+            xxhash64(
+                to_utf8(
+                    cast(od.sales_order_detail_id as varchar) || ':' ||
+                    cast(od.updated_at as varchar)
+                )
+            )
+        )) as sales_order_key
     , od.sales_order_id as sales_order_id
     , od.sales_order_detail_id as sales_order_detail_id
     , od.product_id as product_id
@@ -24,8 +34,9 @@ SELECT
     , oh.sales_order_number as sales_order_number
     , month(oh.order_date) as order_month
     , year(oh.order_date) as order_year
-    , current_timestamp AS created_at
-    , current_timestamp AS updated_at
+    , TRUE as is_current
+    , od.updated_at as active_start
+    , TIMESTAMP '9999-12-31' as active_end
 FROM iceberg.gold.stg_order_detail od
 LEFT JOIN iceberg.gold.stg_order_header oh
 ON od.sales_order_id = oh.sales_order_id;

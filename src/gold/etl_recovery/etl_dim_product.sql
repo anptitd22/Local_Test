@@ -1,3 +1,5 @@
+TRUNCATE TABLE iceberg.gold.dim_product;
+
 INSERT INTO iceberg.gold.dim_product
 (
     product_key
@@ -10,11 +12,19 @@ INSERT INTO iceberg.gold.dim_product
     , product_size
     , sub_category_name
     , category_name
-    , created_at
-    , updated_at
+    , is_current
+    , active_start
+    , active_end
 )
 SELECT
-    p.product_id as product_key
+    ABS(from_big_endian_64(
+            xxhash64(
+                to_utf8(
+                    cast(p.product_id as varchar) || ':' ||
+                    cast(p.updated_at as varchar)
+                )
+            )
+        )) as product_key
     , p.product_id as product_id
     , pc.product_category_id as product_category_id
     , psc.product_sub_category_id as product_sub_category_id
@@ -24,8 +34,9 @@ SELECT
     , psc.name as sub_category_name
     , pc.name as category_name
     , p.list_price as product_list_price
-    , current_timestamp AS created_at
-    , current_timestamp AS updated_at
+    , TRUE as is_current
+    , p.updated_at as active_start
+    , TIMESTAMP '9999-12-31' as active_end
 FROM iceberg.gold.stg_product p
 LEFT JOIN iceberg.gold.stg_product_sub_category psc
 ON p.product_sub_category_id = psc.product_sub_category_id

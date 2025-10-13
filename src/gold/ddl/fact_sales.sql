@@ -4,7 +4,6 @@ create table if not exists iceberg.gold.fact_sales (
     , customer_key bigint 
     , sales_order_key bigint 
     , date_key bigint
-    , product_list_price decimal(18,4)
     , order_unit_price decimal(18,4)
     , order_unit_price_discount decimal(18,4)
     , order_unit_sub_total decimal(18,4)   --order_unit_price * order_qty - order_unit_price_discount :V

@@ -2,12 +2,12 @@ UPDATE iceberg.gold.dim_product
 SET is_current = false,
     active_end = current_timestamp
 WHERE is_current = true 
-  AND date(active_start) = date(current_date)
+  AND date(active_start) = current_date
   AND NOT EXISTS (
     SELECT 1
     FROM iceberg.gold.stg_product s
     WHERE s.product_id = dim_product.product_id
-      AND date(s.updated_at) = date(current_date)
+      AND date(s.updated_at) = current_date
   );
 
 MERGE INTO iceberg.gold.dim_product AS trg

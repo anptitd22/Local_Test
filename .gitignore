@@ -8,3 +8,4 @@ airflow/logs/
 logs*
 *logs*
 airflow/logs/dag_processor/*
+__pycache__

@@ -20,4 +20,4 @@ SELECT
     , current_timestamp AS created_at
     , current_timestamp AS updated_at
 FROM iceberg.silver.customers;
-WHERE date(createdat) = current_date;
+-- WHERE date(createdat) = current_date;

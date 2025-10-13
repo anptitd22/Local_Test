@@ -19,7 +19,7 @@ SELECT
                 cast(c.customer_id  as varchar) || ':' ||
                 cast(od.sales_order_detail_id as varchar) || ':' ||
                 cast(oh.order_date as varchar) || ':' ||
-                cast(od.product_id as varchar) || ':' ||
+                cast(p.product_id as varchar) || ':' ||
                 cast(current_timestamp as varchar)
             )
         ) 
@@ -27,8 +27,8 @@ SELECT
     , ABS(from_big_endian_64(
             xxhash64(
                 to_utf8(
-                    cast(od.product_id as varchar) || ':' ||
-                    cast(od.updated_at as varchar)
+                    cast(p.product_id as varchar) || ':' ||
+                    cast(p.updated_at as varchar)
                 )
             )
         )) as product_key
@@ -60,4 +60,6 @@ FROM iceberg.gold.stg_order_detail od
 LEFT JOIN iceberg.gold.stg_order_header oh
 ON od.sales_order_id = oh.sales_order_id
 LEFT JOIN iceberg.gold.stg_customer c
-ON oh.customer_id = c.customer_id;
+ON oh.customer_id = c.customer_id
+LEFT JOIN iceberg.gold.stg_product p
+ON od.product_id = p.product_id;
