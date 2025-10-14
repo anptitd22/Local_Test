@@ -40,9 +40,9 @@ class ArrowIcebergMinIO:
         self.catalog = load_catalog(
             "hive",
             **{
-                "uri": "thrift://localhost:9083",
+                "uri": "thrift://metastore:9083",
                 "warehouse": "s3a://lakehouse",
-                "s3.endpoint": "http://localhost:9000",
+                "s3.endpoint": "http://minio:9000",
                 "s3.access-key-id": access_key,
                 "s3.secret-access-key": access_secret,
                 "s3.path-style-access": "true",
