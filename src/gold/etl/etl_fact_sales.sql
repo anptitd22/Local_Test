@@ -97,7 +97,7 @@ SELECT
             xxhash64(
                 to_utf8(
                     cast(p.product_id as varchar) || ':' ||
-                    cast(p.updated_at as varchar)
+                    cast(date(p.updated_at) as varchar)
                 )
             )
         )) as product_key
@@ -105,7 +105,7 @@ SELECT
             xxhash64(
                 to_utf8(
                     cast(c.customer_id as varchar) || ':' ||
-                    cast(c.updated_at as varchar)
+                    cast(date(c.updated_at) as varchar)
                 )
             )
         )) as customer_key
@@ -113,7 +113,7 @@ SELECT
             xxhash64(
                 to_utf8(
                     cast(od.sales_order_detail_id as varchar) || ':' ||
-                    cast(od.updated_at as varchar)
+                    cast(date(od.updated_at) as varchar)
                 )
             )
         )) as sales_order_key
