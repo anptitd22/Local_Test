@@ -36,8 +36,10 @@ RUN pip install --no-cache-dir \
     "pyiceberg[pyiceberg-core]==0.10.0"
 
 # file dataset
-COPY ../dataset /opt/airflow/dataset
+# COPY ../dataset /opt/airflow/dataset
 
-COPY ../src /opt/airflow/src
+# COPY ../src /opt/airflow/src
 
-ENV PYTHONPATH="/opt/airflow/src:/opt/airflow/dags:/opt/airflow/plugins:${PYTHONPATH}"
+# ENV PYTHONPATH="/opt/airflow/src:/opt/airflow/dags:/opt/airflow/plugins:${PYTHONPATH}"
+
+ENV PYTHONPATH="/opt/airflow/dags:/opt/airflow/plugins:${PYTHONPATH}"

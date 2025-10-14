@@ -1,16 +1,16 @@
-UPDATE iceberg.gold.dim_order 
-SET is_current = false,
-    active_end = current_timestamp
-WHERE is_current = true 
-  AND date(active_start) = current_date
-  AND NOT EXISTS (
-    SELECT 1
-    FROM iceberg.gold.stg_order_detail od
-    LEFT JOIN iceberg.gold.stg_order_header oh
-    ON od.sales_order_id = oh.sales_order_id
-    WHERE od.sales_order_detail_id = dim_order.sales_order_detail_id
-      AND date(od.updated_at) = current_date
-  );
+-- UPDATE iceberg.gold.dim_order 
+-- SET is_current = false,
+--     active_end = current_timestamp
+-- WHERE is_current = true 
+--   AND date(active_start) = current_date
+--   AND NOT EXISTS (
+--     SELECT 1
+--     FROM iceberg.gold.stg_order_detail od
+--     LEFT JOIN iceberg.gold.stg_order_header oh
+--     ON od.sales_order_id = oh.sales_order_id
+--     WHERE od.sales_order_detail_id = dim_order.sales_order_detail_id
+--       AND date(od.updated_at) = current_date
+--   );
 
 MERGE INTO iceberg.gold.dim_order AS trg
 USING (
