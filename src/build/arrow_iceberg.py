@@ -1,6 +1,8 @@
 import datetime
+import os
 from typing import Literal
 
+from dotenv import load_dotenv
 import pyarrow as pa
 import pyarrow.csv as csv
 import pyarrow.compute as pc
@@ -10,7 +12,12 @@ from pyiceberg.catalog import load_catalog
 from pyiceberg.schema import Schema
 from pyiceberg.partitioning import PartitionSpec, PartitionField
 from pyiceberg.transforms import DayTransform
-from pyiceberg.types import NestedField, TimestampType
+
+path_env = '../../.env'
+load_dotenv(path_env)
+
+ACCESS_KEY = os.getenv('MINIO_ROOT_USER', 'admin')
+ACCESS_SECRET = os.getenv('MINIO_ROOT_PASSWORD', 'admin12345')
 
 class ArrowIcebergMinIO:
     def __init__(
@@ -20,29 +27,39 @@ class ArrowIcebergMinIO:
         , namespace: str
         , namespace_etl: str
         , table: str
-        , catalog: load_catalog
-        , arrow_schema: pa.Schema
-        , iceberg_schema: Schema
+        , access_key: str = ACCESS_KEY
+        , access_secret: str = ACCESS_SECRET
+        , arrow_schema: pa.Schema = None
+        , iceberg_schema: Schema = None
     ) -> None:
         self.file_path = file_path
         self.namespace = namespace
         self.namespace_etl = namespace_etl
         self.table = table
-        self.catalog = catalog
         self.arrow_schema = arrow_schema
+        self.catalog = load_catalog(
+            "hive",
+            **{
+                "uri": "thrift://localhost:9083",
+                "warehouse": "s3a://lakehouse",
+                "s3.endpoint": "http://localhost:9000",
+                "s3.access-key-id": access_key,
+                "s3.secret-access-key": access_secret,
+                "s3.path-style-access": "true",
+                "s3.region": "us-east-1",
+                "s3.ssl.enabled": "false",
+                "py-io-impl": "pyiceberg.io.pyarrow.PyArrowFileIO",
+                "fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
+            }
+        )
         self.iceberg_schema = iceberg_schema
 
-        if file_type not in ['csv']:
-            raise ValueError("file_type must be one of 'csv'")
-        self.file_type = file_type
-        if self.file_type == 'csv':
+        if file_type in ['csv']:
             self.df = csv.read_csv(self.file_path)
+        else:
+            raise ValueError("file_type must be one of 'csv'")
 
         self.df = self.df.append_column("CreatedAt", pc.strptime(pa.array([datetime.datetime.now().isoformat(timespec="seconds")] * len(self.df)), format="%Y-%m-%dT%H:%M:%S", unit="us"))
-
-    def drop_missing_data(self, field: str) -> DataFrame:
-        mask = pc.invert(pc.is_null(self.df[field]))
-        return self.df.filter(mask)
 
     def upload_to_iceberg(self) -> None:
 

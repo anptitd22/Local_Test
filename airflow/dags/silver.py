@@ -3,7 +3,7 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.providers.standard.operators.bash import BashOperator
 
-SCRIPT_DIR = "/opt/airflow/src/silver_v2"
+SCRIPT_DIR = "/opt/airflow/src/silver"
 DATA_DIR = "/opt/airflow/dataset/datamart"
 
 default_args = {
