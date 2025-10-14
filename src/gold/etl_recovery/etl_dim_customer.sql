@@ -18,7 +18,7 @@ SELECT
             xxhash64(
                 to_utf8(
                     cast(customer_id as varchar) || ':' ||
-                    cast(updated_at as varchar)
+                    cast(date(updated_at) as varchar)
                 )
             )
         )) as customer_key

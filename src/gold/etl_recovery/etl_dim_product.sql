@@ -21,7 +21,7 @@ SELECT
             xxhash64(
                 to_utf8(
                     cast(p.product_id as varchar) || ':' ||
-                    cast(p.updated_at as varchar)
+                    cast(date(p.updated_at) as varchar)
                 )
             )
         )) as product_key
