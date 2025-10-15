@@ -21,7 +21,7 @@ SELECT
             xxhash64(
                 to_utf8(
                     cast(od.sales_order_detail_id as varchar) || ':' ||
-                    cast(od.updated_at as varchar)
+                    cast(date(od.updated_at) as varchar)
                 )
             )
         )) as sales_order_key

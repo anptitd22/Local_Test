@@ -14,8 +14,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--operation', type=str, required=False, default='upload', help='Operation to perform: upload or delete')
 parser.add_argument('--namespace', type=str, required=False, default='silver', help='Namespace of the table')
 parser.add_argument('--namespace_etl', type=str, required=False, default='gold', help='Namespace of the ETL table')
-parser.add_argument('--file', type=str, required=False, default='../../dataset/datamart/ProductCategory.csv', help='CSV file to upload')
-parser.add_argument('--table', type=str, required=False, default='product_categories', help='Table name to upload or delete')
+parser.add_argument('--file', type=str, required=False, default='../../dataset/datamart/ProductSubCategory.csv', help='CSV file to upload')
+parser.add_argument('--table', type=str, required=False, default='product_sub_categories', help='Table name to upload or delete')
 args = parser.parse_args()
 
 if __name__ == "__main__":
