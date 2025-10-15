@@ -7,7 +7,6 @@ INSERT INTO iceberg.gold.fact_sales
     , customer_key
     , sales_order_key
     , date_key
-    , product_list_price
     , order_unit_price
     , order_unit_price_discount
     , order_unit_sub_total

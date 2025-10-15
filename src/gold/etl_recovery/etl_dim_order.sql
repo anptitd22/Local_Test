@@ -12,9 +12,9 @@ INSERT INTO iceberg.gold.dim_order
     , sales_order_number
     , order_month
     , order_year
-    , is_current BOOLEAN 
-    , active_start timestamp 
-    , active_end timestamp 
+    , is_current  
+    , active_start  
+    , active_end  
 )
 SELECT
     ABS(from_big_endian_64(

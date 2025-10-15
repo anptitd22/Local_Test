@@ -5,8 +5,8 @@ create table if not exists iceberg.gold.stg_order_detail (
     , order_qty bigint
     , unit_price decimal(18,4)
     , unit_price_discount decimal(18,4)
-    , created_at timestamp with time zone
-    , updated_at timestamp with time zone
+    , created_at timestamp 
+    , updated_at timestamp
 )
 WITH (
     format = 'PARQUET',

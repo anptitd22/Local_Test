@@ -28,12 +28,12 @@ SELECT
     , p.product_id as product_id
     , pc.product_category_id as product_category_id
     , psc.product_sub_category_id as product_sub_category_id
+    , p.list_price as product_list_price
     , p.name as product_name
     , p.color as product_color
     , p.size as product_size
     , psc.name as sub_category_name
     , pc.name as category_name
-    , p.list_price as product_list_price
     , TRUE as is_current
     , p.updated_at as active_start
     , TIMESTAMP '9999-12-31' as active_end

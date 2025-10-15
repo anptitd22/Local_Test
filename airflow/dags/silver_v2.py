@@ -9,6 +9,7 @@ if airflow_src_path not in sys.path:
 from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.operators.python import PythonOperator
+from airflow.timetables.interval import CronDataIntervalTimetable
 
 from src.silver_v2.upload_silver import (
     upload_table_to_iceberg,
@@ -47,7 +48,7 @@ TABLE_TASKS_CONFIG = {
 default_args = {
     "owner": "TEST",
     "depends_on_past": False,
-    "start_date": datetime(2025, 7, 9),
+    "start_date": datetime(2025, 10, 10),
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 1,
@@ -59,7 +60,7 @@ with DAG(
     default_args=default_args,
     description="silver for e-commerce data",
     tags=["silver"],
-    schedule="*/30 * * * *",  # chạy mỗi 30 phút
+    schedule=CronDataIntervalTimetable("0 0 * * *", timezone="UTC"),  # chạy mỗi 30 phút
     catchup=False,
 ) as dag:
     
