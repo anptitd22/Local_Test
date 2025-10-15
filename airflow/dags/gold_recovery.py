@@ -17,11 +17,11 @@ default_args = {
 SQL_BASE_DIR = "/opt/airflow/src/gold"
 
 with DAG(
-    dag_id="gold",
+    dag_id="gold_recovery",
     default_args=default_args,
     description="gold for e-commerce data",
     schedule=CronDataIntervalTimetable("0 0 * * *", timezone="UTC"),
-    catchup=True,
+    catchup=False,
     tags=["gold"],
     template_searchpath=[SQL_BASE_DIR],     
 ) as dag:
@@ -70,37 +70,37 @@ with DAG(
         etl_stg_customer_task = SQLExecuteQueryOperator(
             task_id="etl_stg_customer",
             conn_id="trino_conn",
-            sql="etl/staging/etl_stg_customer.sql",
+            sql="etl_recovery/staging/etl_stg_customer.sql",
             split_statements=True,
         )
         etl_stg_product_task = SQLExecuteQueryOperator(
             task_id="etl_stg_product",
             conn_id="trino_conn",
-            sql="etl/staging/etl_stg_product.sql",
+            sql="etl_recovery/staging/etl_stg_product.sql",
             split_statements=True,
         )
         etl_stg_order_header_task = SQLExecuteQueryOperator(
             task_id="etl_stg_order_header",
             conn_id="trino_conn",
-            sql="etl/staging/etl_stg_order_header.sql",
+            sql="etl_recovery/staging/etl_stg_order_header.sql",
             split_statements=True,
         )
         etl_stg_order_detail_task = SQLExecuteQueryOperator(
             task_id="etl_stg_order_detail",
             conn_id="trino_conn",
-            sql="etl/staging/etl_stg_order_detail.sql",
+            sql="etl_recovery/staging/etl_stg_order_detail.sql",
             split_statements=True,
         )
         etl_stg_product_category_task = SQLExecuteQueryOperator(
             task_id="etl_stg_product_category",
             conn_id="trino_conn",
-            sql="etl/staging/etl_stg_product_category.sql",
+            sql="etl_recovery/staging/etl_stg_product_category.sql",
             split_statements=True,
         )
         etl_stg_product_sub_category_task = SQLExecuteQueryOperator(
             task_id="etl_stg_product_sub_category",
             conn_id="trino_conn",
-            sql="etl/staging/etl_stg_product_sub_category.sql",
+            sql="etl_recovery/staging/etl_stg_product_sub_category.sql",
             split_statements=True,
         )
 
@@ -139,25 +139,25 @@ with DAG(
         etl_dim_customer_task = SQLExecuteQueryOperator(
             task_id="etl_dim_customer",
             conn_id="trino_conn",
-            sql="etl/etl_dim_customer.sql",
+            sql="etl_recovery/etl_dim_customer.sql",
             split_statements=True,
         )
         etl_dim_product_task = SQLExecuteQueryOperator(
             task_id="etl_dim_product",
             conn_id="trino_conn",
-            sql="etl/etl_dim_product.sql",
+            sql="etl_recovery/etl_dim_product.sql",
             split_statements=True,
         )
         etl_dim_order_task = SQLExecuteQueryOperator(
             task_id="etl_dim_order",
             conn_id="trino_conn",
-            sql="etl/etl_dim_order.sql",
+            sql="etl_recovery/etl_dim_order.sql",
             split_statements=True,
         )
         etl_dim_date_task = SQLExecuteQueryOperator(
             task_id="etl_dim_date",
             conn_id="trino_conn",
-            sql="etl/etl_dim_date.sql",
+            sql="etl_recovery/etl_dim_date.sql",
             split_statements=True,
         )
 
@@ -183,13 +183,13 @@ with DAG(
         etl_fact_sales_task = SQLExecuteQueryOperator(
             task_id="etl_fact_sales",
             conn_id="trino_conn",
-            sql="etl/etl_fact_sales.sql",
+            sql="etl_recovery/etl_fact_sales.sql",
             split_statements=True,
         )
         etl_fact_sales_month_task = SQLExecuteQueryOperator(
             task_id="etl_fact_sales_month",
             conn_id="trino_conn",
-            sql="etl/etl_fact_sales_month.sql",
+            sql="etl_recovery/etl_fact_sales_month.sql",
             split_statements=True,
         )
 
