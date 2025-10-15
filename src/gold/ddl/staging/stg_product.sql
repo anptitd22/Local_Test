@@ -5,8 +5,8 @@ create table if not exists iceberg.gold.stg_product (
     , list_price decimal(18,4)
     , size varchar
     , product_sub_category_id bigint
-    , created_at timestamp with time zone
-    , updated_at timestamp with time zone
+    , created_at timestamp
+    , updated_at timestamp
 )
 WITH (
     format = 'PARQUET',

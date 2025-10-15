@@ -1,5 +1,5 @@
 DELETE FROM iceberg.gold.stg_order_header
-WHERE date(updated_at) = current_date;
+WHERE updated_at >= timestamp '{{data_interval_start}}' and updated_at < timestamp '{{data_interval_end}}';
 
 INSERT INTO iceberg.gold.stg_order_header
 (
@@ -19,7 +19,7 @@ SELECT
     , CAST(salesordernumber AS VARCHAR) AS sales_order_number
     , CAST(customerid AS BIGINT) AS customer_id
     , CAST(subtotal AS DECIMAL(18,4)) AS sub_total
-    , current_timestamp AS created_at
-    , current_timestamp AS updated_at
-FROM iceberg.silver.order_headers;
--- WHERE date(createdat) = current_date;
+    , CAST('{{data_interval_start}}' AS TIMESTAMP) AS created_at
+    , CAST('{{data_interval_start}}' AS TIMESTAMP) AS updated_at
+FROM iceberg.silver.order_headers
+WHERE orderdate >= timestamp '{{data_interval_start}}' and orderdate < timestamp '{{data_interval_end}}';

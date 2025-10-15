@@ -9,9 +9,9 @@ INSERT INTO iceberg.gold.dim_customer
     , middle_name
     , last_name
     , full_name
-    , is_current BOOLEAN 
-    , active_start timestamp 
-    , active_end timestamp 
+    , is_current  
+    , active_start  
+    , active_end  
     )
 SELECT
     ABS(from_big_endian_64(

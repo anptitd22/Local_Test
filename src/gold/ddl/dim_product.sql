@@ -10,8 +10,8 @@ create table if not exists iceberg.gold.dim_product (
     , sub_category_name varchar
     , category_name varchar
     , is_current BOOLEAN 
-    , active_start timestamp with time zone
-    , active_end timestamp with time zone
+    , active_start timestamp
+    , active_end timestamp
 )
 WITH (
     format = 'PARQUET',
