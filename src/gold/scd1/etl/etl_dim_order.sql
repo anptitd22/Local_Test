@@ -1,6 +1,6 @@
 DELETE FROM iceberg.gold.dim_order
-WHERE order_date >= timestamp '{{data_interval_start}}'
-    AND order_date < timestamp '{{data_interval_end}}';
+WHERE updated_at >= timestamp '{{data_interval_start}}'
+    AND updated_at < timestamp '{{data_interval_end}}';
 
 INSERT INTO iceberg.gold.dim_order (
     sales_order_key,

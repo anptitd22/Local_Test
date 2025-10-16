@@ -61,7 +61,7 @@ SELECT
     , CAST('{{data_interval_start}}' AS TIMESTAMP) AS created_at
     , CAST('{{data_interval_start}}' AS TIMESTAMP) AS updated_at
 FROM iceberg.gold.stg_order_detail od
-JOIN iceberg.gold.stg_order_header oh
+RIGHT JOIN iceberg.gold.stg_order_header oh
 ON od.sales_order_id = oh.sales_order_id 
     AND oh.order_date >= timestamp '{{data_interval_start}}'
     and oh.order_date < timestamp '{{data_interval_end}}'
