@@ -9,7 +9,7 @@ create table if not exists iceberg.gold.dim_order (
     , sales_order_number varchar
     , order_month int 
     , order_year int
-    , created_at TIMESTAMP
+    , created_at TIMESTAMP 
     , updated_at TIMESTAMP
 )
 WITH (

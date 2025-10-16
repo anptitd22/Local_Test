@@ -1,5 +1,4 @@
-DELETE FROM iceberg.gold.stg_customer 
-WHERE updated_at >= timestamp '{{data_interval_start}}' and updated_at < timestamp '{{data_interval_end}}';
+TRUNCATE TABLE iceberg.gold.stg_customer;
 
 INSERT INTO iceberg.gold.stg_customer
 (
@@ -17,7 +16,6 @@ SELECT
     , CAST(firstname AS VARCHAR) AS first_name
     , CAST(middlename AS VARCHAR) AS middle_name
     , CAST(lastname AS VARCHAR) AS last_name
-    , CAST('{{data_interval_start}}' AS TIMESTAMP) AS created_at
-    , CAST('{{data_interval_start}}' AS TIMESTAMP) AS updated_at
+    , current_timestamp AS created_at
+    , current_timestamp AS updated_at
 FROM iceberg.silver.customers;
--- WHERE date(createdat) = current_date;

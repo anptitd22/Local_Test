@@ -24,7 +24,7 @@ SELECT
     , do.order_year as year
 FROM iceberg.gold.fact_sales fs
 JOIN iceberg.gold.dim_order do
-ON fs.sales_order_key = do.sales_order_key AND do.is_current = TRUE
+ON fs.sales_order_key = do.sales_order_key
 GROUP BY
     fs.customer_key
     , do.order_month

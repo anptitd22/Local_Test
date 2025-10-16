@@ -48,7 +48,7 @@ SELECT
             xxhash64(
                 to_utf8(
                     cast(od.sales_order_detail_id as varchar) || ':' ||
-                    cast(date(od.updated_at) as varchar)
+                    cast(date(oh.updated_at) as varchar)
                 )
             )
         )) as sales_order_key
@@ -67,11 +67,5 @@ ON od.sales_order_id = oh.sales_order_id
     and oh.order_date < timestamp '{{data_interval_end}}'
 LEFT JOIN iceberg.gold.stg_customer c
 ON oh.customer_id = c.customer_id 
-    AND c.updated_at >= timestamp '{{data_interval_start}}'
-    and c.updated_at < timestamp '{{data_interval_end}}'
 LEFT JOIN iceberg.gold.stg_product p
-ON od.product_id = p.product_id 
-    AND p.updated_at >= timestamp '{{data_interval_start}}'
-    and p.updated_at < timestamp '{{data_interval_end}}'
-WHERE od.updated_at >= timestamp '{{data_interval_start}}'
-    and od.updated_at < timestamp '{{data_interval_end}}';
+ON od.product_id = p.product_id;

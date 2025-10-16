@@ -1,5 +1,4 @@
-DELETE FROM iceberg.gold.stg_order_detail
-WHERE updated_at >= timestamp '{{data_interval_start}}' and updated_at < timestamp '{{data_interval_end}}';
+TRUNCATE TABLE iceberg.gold.stg_order_detail;
 
 INSERT INTO iceberg.gold.stg_order_detail
 (
@@ -19,7 +18,6 @@ SELECT
     , CAST(orderqty AS BIGINT) AS order_qty
     , CAST(unitprice AS DECIMAL(18,4)) AS unit_price
     , CAST(unitpricediscount AS DECIMAL(18,4)) AS unit_price_discount
-    , CAST('{{data_interval_start}}' AS TIMESTAMP) AS created_at
-    , CAST('{{data_interval_start}}' AS TIMESTAMP) AS updated_at
+    , current_timestamp AS created_at
+    , current_timestamp AS updated_at
 FROM iceberg.silver.order_details;
--- WHERE date(createdat) = current_date;

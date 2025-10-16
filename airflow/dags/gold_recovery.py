@@ -14,7 +14,7 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
-SQL_BASE_DIR = "/opt/airflow/src/gold/scd2"
+SQL_BASE_DIR = "/opt/airflow/src/gold/scd1"
 
 with DAG(
     dag_id="gold_recovery",

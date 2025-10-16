@@ -1,5 +1,6 @@
 DELETE FROM iceberg.gold.stg_order_header
-WHERE updated_at >= timestamp '{{data_interval_start}}' and updated_at < timestamp '{{data_interval_end}}';
+WHERE updated_at >= timestamp '{{data_interval_start}}'
+    AND updated_at < timestamp '{{data_interval_end}}';
 
 INSERT INTO iceberg.gold.stg_order_header
 (

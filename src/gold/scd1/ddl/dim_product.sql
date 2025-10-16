@@ -9,8 +9,8 @@ create table if not exists iceberg.gold.dim_product (
     , product_size varchar
     , sub_category_name varchar
     , category_name varchar
-    , created_at TIMESTAMP
-    , updated_at TIMESTAMP
+    , created_at TIMESTAMP WITH TIME ZONE
+    , updated_at TIMESTAMP WITH TIME ZONE
 )
 WITH (
     format = 'PARQUET',

@@ -45,6 +45,39 @@
 -- WHERE updated_at >= timestamp '{{data_interval_start}}' 
 --     and updated_at < timestamp '{{data_interval_end}}';
 
+UPDATE iceberg.gold.dim_customer
+SET is_current = false,
+    active_end = current_timestamp
+WHERE is_current = true
+AND customer_id IN (    
+    SELECT s.customer_id
+    FROM iceberg.gold.stg_customer s
+    JOIN iceberg.gold.dim_customer d2
+        ON d2.customer_id = s.customer_id
+        AND d2.is_current = true
+        AND d2.active_start < timestamp '{{data_interval_start}}'
+    WHERE s.updated_at >= timestamp '{{data_interval_start}}'
+        AND s.updated_at <  timestamp '{{data_interval_end}}'
+        AND (
+            coalesce(d2.account_number,'') <> coalesce(s.account_number,'')
+            OR coalesce(d2.first_name,'') <> coalesce(s.first_name,'')
+            OR coalesce(d2.middle_name,'') <> coalesce(s.middle_name,'')
+            OR coalesce(d2.last_name,'') <> coalesce(s.last_name,'')
+        )
+);
+
+INSERT INTO iceberg.gold.dim_customer (
+    customer_key,
+    customer_id,
+    account_number,
+    first_name,
+    middle_name,
+    last_name,
+    full_name,
+    is_current,
+    active_start,
+    active_end
+)
 WITH stg_customer__source AS (
     SELECT 
         customer_id,
@@ -52,6 +85,7 @@ WITH stg_customer__source AS (
         first_name,
         middle_name,
         last_name,
+        created_at,
         updated_at
     FROM iceberg.gold.stg_customer
     WHERE updated_at >= timestamp '{{data_interval_start}}' 
@@ -92,29 +126,10 @@ record_changed_global AS (
         FROM iceberg.gold.dim_customer
     )
 ),
-update_records_local AS (
-UPDATE iceberg.gold.dim_customer d
-SET is_current = false,
-    active_end = current_timestamp
-WHERE d.is_current = true
-  AND d.customer_id IN (SELECT customer_id FROM record_changed_local)
-),
 insert_records AS (
     SELECT * FROM record_changed_local
     UNION ALL
     SELECT * FROM record_changed_global
-)
-INSERT INTO iceberg.gold.dim_customer (
-    customer_key,
-    customer_id,
-    account_number,
-    first_name,
-    middle_name,
-    last_name,
-    full_name,
-    is_current,
-    active_start,
-    active_end
 )
 SELECT 
     ABS(from_big_endian_64(

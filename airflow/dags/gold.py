@@ -14,7 +14,7 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
-SQL_BASE_DIR = "/opt/airflow/src/gold/scd2"
+SQL_BASE_DIR = "/opt/airflow/src/gold/scd1"
 
 with DAG(
     dag_id="gold",
@@ -23,6 +23,8 @@ with DAG(
     schedule=CronDataIntervalTimetable("0 0 * * *", timezone="UTC"),
     catchup=True,
     tags=["gold"],
+    max_active_runs=1,
+    max_active_tasks=4,
     template_searchpath=[SQL_BASE_DIR],     
 ) as dag:
 
